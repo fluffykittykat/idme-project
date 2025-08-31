@@ -2,7 +2,7 @@ import os
 import json
 import secrets
 from urllib.parse import urlencode
-from flask import Flask, redirect, request, session, render_template, url_for, abort
+from flask import Flask, redirect, request, session, render_template, url_for, abort, send_from_directory
 import requests
 import base64
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -441,6 +441,12 @@ def logout():
     """
     session.clear()
     return redirect(url_for("index"))
+
+
+@app.route("/slides")
+def slides_deck():
+    """Serve the Reveal.js slide deck."""
+    return send_from_directory("slides", "retail-idme-deck.html")
 
 
 if __name__ == "__main__":
