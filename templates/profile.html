@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Walmart | Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background: #f7f7f7; color: #111; }
+    header { background: #0071dc; color: #fff; padding: 16px 24px; }
+    header h1 { margin: 0; font-size: 20px; }
+    main { max-width: 920px; margin: 32px auto; background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    h2 { margin-top: 0; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .card { background: #fafafa; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; }
+    .muted { color: #555; }
+    pre { background: #0b1020; color: #d1e7ff; padding: 16px; border-radius: 8px; overflow: auto; max-height: 60vh; }
+    a.btn { display: inline-block; margin-right: 8px; padding: 10px 14px; background: #2c7a7b; color: #fff; border-radius: 6px; text-decoration: none; font-weight: 600; }
+    a.btn:hover { background: #276a6b; }
+    .actions { margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Walmart Retail — Signed in with ID.me</h1>
+  </header>
+  <main>
+    <h2>User Profile</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Basic Details</h3>
+        <p><strong>First name:</strong> {{ (profile.first_name if profile and profile.first_name) or 'N/A' }}</p>
+        <p><strong>Last name:</strong> {{ (profile.last_name if profile and profile.last_name) or 'N/A' }}</p>
+        <p><strong>Email:</strong> {{ (profile.email if profile and profile.email) or 'N/A' }}</p>
+        <div class="actions">
+          <a class="btn" href="/">Home</a>
+          <a class="btn" href="/logout">Logout</a>
+        </div>
+        <p class="muted">Displayed fields are extracted from the payload if present.</p>
+      </div>
+      <div class="card">
+        <h3>Payload (Tokens + UserInfo)</h3>
+        <pre>{{ payload_str }}</pre>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
