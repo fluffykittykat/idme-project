@@ -442,13 +442,6 @@ def logout():
     session.clear()
     return redirect(url_for("index"))
 
-
-@app.route("/slides")
-def slides_deck():
-    """Serve the Reveal.js slide deck."""
-    return send_from_directory("slides", "retail-idme-deck.html")
-
-
 if __name__ == "__main__":
     # Run Flask app
     # Ensure the redirect URI matches http://localhost:5000/callback (default) or set IDME_REDIRECT_URI to your callback
