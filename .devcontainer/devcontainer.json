@@ -2,7 +2,6 @@
   "name": "Python 3",
   "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bullseye",
 
-  "runArgs": ["-p", "5000:5000"],
   "forwardPorts": [5000],
   "portsAttributes": {
     "5000": { "label": "App server", "onAutoForward": "openBrowser" }
@@ -12,9 +11,6 @@
 
   "postStartCommand": "bash -lc 'pgrep -f \"python app.py\" >/dev/null || (nohup python app.py >/tmp/app.log 2>&1 & disown)'",
 
-  "mounts": [
-    "source=C:/Users/DJ/workspace/idme,target=/workspace,type=bind,consistency=cached"
-  ],
   "workspaceFolder": "/workspace",
 
   "customizations": {
@@ -27,4 +23,3 @@
 
   // "remoteUser": "root"
 }
-
