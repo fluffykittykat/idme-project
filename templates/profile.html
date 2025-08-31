@@ -65,8 +65,8 @@
         </a>
       </div>
       <div class="nav">
-        {% if profile and profile.first_name %}
-          <span class="pill">Hi, {{ profile.first_name }}{% if profile.is_teacher %} • Teacher{% endif %}</span>
+        {% if logged_in %}
+          <span class="pill">Hi, {% if profile and profile.first_name %}{{ profile.first_name }}{% else %}Member{% endif %}{% if profile and profile.is_teacher %} • Teacher{% endif %}</span>
           <a class="btn btn-outline" href="{{ url_for('index') }}">Storefront</a>
           <a class="btn btn-primary" href="{{ url_for('logout') }}">Sign out</a>
         {% else %}

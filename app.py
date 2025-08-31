@@ -407,6 +407,7 @@ def profile():
     tokens = session.get("idme_tokens")
     userinfo = session.get("idme_userinfo")
     profile = session.get("idme_profile")
+    logged_in = bool(tokens)
 
     if not tokens and not userinfo:
         # No session data, ask user to start over
@@ -429,6 +430,7 @@ def profile():
         "profile.html",
         profile=profile or {},
         payload_str=payload_str,
+        logged_in=logged_in,
     )
 
 

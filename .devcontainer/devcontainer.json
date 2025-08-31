@@ -1,4 +1,3 @@
-
 {
 
   "name": "Python 3",
@@ -11,8 +10,6 @@
   },
 
   "postCreateCommand": "bash -lc 'set -e; python -m pip install --upgrade pip; if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; else echo \"No requirements.txt; skipping.\"; fi'",
-
-  "postStartCommand": "python app.py &",
 
   "mounts": [
     "source=C:/Users/DJ/workspace/idme,target=/workspace,type=bind,consistency=cached"
