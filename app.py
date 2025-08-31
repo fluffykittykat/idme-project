@@ -39,6 +39,13 @@ if os.getenv("FORCE_HTTPS", "0") == "1":
 # Use a persistent secret in env for session protection; fallback for demo purposes only
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret-change-me")
 
+@app.template_filter("currency")
+def currency_filter(value):
+    try:
+        return "${:,.2f}".format(float(value))
+    except Exception:
+        return str(value)
+
 # Config via environment variables with sensible defaults for the exercise
 IDME_DISCOVERY_URL = os.getenv("IDME_DISCOVERY_URL", "https://api.id.me/oidc/.well-known/openid-configuration")
 IDME_CLIENT_ID = os.getenv("IDME_CLIENT_ID", "28bf5c72de76f94a5fb1d9454e347d4e")
@@ -51,6 +58,39 @@ IDME_ACR_VALUES = os.getenv("IDME_ACR_VALUES")  # e.g., "urn:mace:incommon:iap:s
 # If running on a different host/port, set IDME_REDIRECT_URI accordingly (must match the Flask callback URL)
 DEFAULT_REDIRECT_URI = "http://localhost:5000/callback"
 IDME_REDIRECT_URI = os.getenv("IDME_REDIRECT_URI", DEFAULT_REDIRECT_URI)
+DEMO_FORCE_TEACHER = os.getenv("DEMO_FORCE_TEACHER", "1") == "1"
+
+# Demo catalog: three large-screen TVs
+PRODUCTS = [
+    {
+        "sku": "samsung-qled-75",
+        "brand": "Samsung",
+        "name": '75" Class QLED 4K Smart TV',
+        "price": 998.00,
+        "was": 1298.00,
+        "size": 75,
+        "image": "images/75inch.webp",
+    },
+    {
+        "sku": "lg-oled-85",
+        "brand": "LG",
+        "name": '85" Class OLED 4K Smart TV',
+        "price": 1298.00,
+        "was": 1796.99,
+        "size": 85,
+        "image": "images/85inch.webp",
+    },
+    {
+        "sku": "tcl-uhd-95",
+        "brand": "TCL",
+        "name": '95" Class 4K UHD HDR Smart TV',
+        "price": 498.00,
+        "was": 648.00,
+        "size": 95,
+        "image": "images/95inch.webp",
+    },
+]
+DISCOUNT_RATE = 0.10  # 10% educator discount
 
 
 def effective_redirect_uri():
@@ -94,6 +134,59 @@ def decode_jwt_unverified(token: str):
         return None
 
 
+def is_teacher_from_claims(claims: dict) -> bool:
+    """
+    Best-effort detection of 'teacher' affiliation from ID.me userinfo/id_token claims.
+    This handles a few common shapes without relying on a single schema:
+      - affiliations: ["teacher", ...] or [{"name": "Teacher"}, {"slug": "teacher"}]
+      - affiliation / community / member_of: string or list with 'teacher'
+      - groups / verified_attributes: any string containing 'teacher'
+    """
+    if not isinstance(claims, dict):
+        return False
+
+    def contains_teacher(value) -> bool:
+        if value is None:
+            return False
+        if isinstance(value, str):
+            return "teacher" in value.lower()
+        if isinstance(value, (list, tuple, set)):
+            return any(contains_teacher(v) for v in value)
+        if isinstance(value, dict):
+            # check common fields inside objects
+            for k in ("name", "slug", "type", "value"):
+                if k in value and contains_teacher(value[k]):
+                    return True
+        return False
+
+    candidate_keys = [
+        "affiliations",
+        "affiliation",
+        "member_of",
+        "community",
+        "groups",
+        "verified_attributes",
+        "eligible_segments",
+        "segment",
+        "idme_communities",
+    ]
+    for key in candidate_keys:
+        if key in claims and contains_teacher(claims[key]):
+            return True
+
+    # some providers embed roles/entitlements in custom claim namespaces
+    for k, v in claims.items():
+        if isinstance(k, str) and any(s in k.lower() for s in ("role", "group", "entitlement", "affiliation", "community", "segment")):
+            if contains_teacher(v):
+                return True
+
+    # common boolean flag fallback
+    if isinstance(claims.get("is_teacher"), bool) and claims.get("is_teacher"):
+        return True
+
+    return False
+
+
 def get_provider_config():
     """
     Retrieve and cache the OIDC provider configuration from the well-known endpoint.
@@ -108,9 +201,54 @@ def get_provider_config():
 @app.route("/")
 def index():
     """
-    Simple landing page with Walmart branding and a Verify with ID.me button.
+    Walmart-style storefront with three big-screen TVs.
+    Shows educator 10% discount pricing when the user is verified as a teacher via ID.me.
     """
-    return render_template("index.html")
+    profile = session.get("idme_profile") or {}
+    logged_in = bool(session.get("idme_tokens"))
+    is_teacher = logged_in and (bool(profile.get("is_teacher")) or DEMO_FORCE_TEACHER)
+    show_generic_welcome = bool(request.args.get("welcome"))
+    return render_template(
+        "index.html",
+        products=PRODUCTS,
+        is_teacher=is_teacher,
+        discount_rate=DISCOUNT_RATE,
+        profile=profile,
+        show_generic_welcome=show_generic_welcome,
+        logged_in=logged_in,
+    )
+
+
+def find_product_by_sku(sku: str):
+    for p in PRODUCTS:
+        if p.get("sku") == sku:
+            return p
+    return None
+
+
+@app.route("/product/<sku>")
+def product_detail(sku):
+    """
+    Product detail page with personalized greeting and savings breakdown for teachers.
+    """
+    product = find_product_by_sku(sku)
+    if not product:
+        abort(404)
+    profile = session.get("idme_profile") or {}
+    logged_in = bool(session.get("idme_tokens"))
+    is_teacher = logged_in and (bool(profile.get("is_teacher")) or DEMO_FORCE_TEACHER)
+    discounted = round(float(product["price"]) * (1 - DISCOUNT_RATE), 2)
+    savings = round(float(product["price"]) - discounted, 2)
+    return render_template(
+        "product.html",
+        product=product,
+        profile=profile,
+        is_teacher=is_teacher,
+        discount_rate=DISCOUNT_RATE,
+        discounted=discounted,
+        savings=savings,
+        logged_in=logged_in,
+    )
 
 
 @app.route("/login")
@@ -241,13 +379,24 @@ def callback():
     session["idme_userinfo"] = userinfo
     session["idme_userinfo_claims"] = userinfo_claims
     session["idme_id_token_claims"] = id_claims
+    # Determine teacher eligibility from claims
+    is_teacher = False
+    if isinstance(userinfo_claims, dict):
+        is_teacher = is_teacher_from_claims(userinfo_claims)
+    if not is_teacher and isinstance(id_claims, dict):
+        is_teacher = is_teacher_from_claims(id_claims)
+    # DEMO: Force teacher eligibility if enabled
+    if DEMO_FORCE_TEACHER:
+        is_teacher = True
+
     session["idme_profile"] = {
         "first_name": first_name,
         "last_name": last_name,
         "email": email,
+        "is_teacher": is_teacher,
     }
 
-    return redirect(url_for("profile"))
+    return redirect(url_for("index"))
 
 
 @app.route("/profile")

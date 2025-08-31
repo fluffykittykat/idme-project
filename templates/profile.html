@@ -2,47 +2,124 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Walmart | Profile</title>
+  <title>Walmart | Your Profile</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background: #f7f7f7; color: #111; }
-    header { background: #0071dc; color: #fff; padding: 16px 24px; }
-    header h1 { margin: 0; font-size: 20px; }
-    main { max-width: 920px; margin: 32px auto; background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-    h2 { margin-top: 0; }
-    .grid { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 16px; align-items: start; }
-    .card { background: #fafafa; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; }
-    .muted { color: #555; }
-    pre { background: #0b1020; color: #d1e7ff; padding: 16px; border-radius: 8px; overflow: auto; height: 50vh; max-height: none; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
-    a.btn { display: inline-block; margin-right: 8px; padding: 10px 14px; background: #2c7a7b; color: #fff; border-radius: 6px; text-decoration: none; font-weight: 600; }
-    a.btn:hover { background: #276a6b; }
-    .actions { margin-top: 16px; }
-    .payload { min-width: 0; }
-    .payload pre { resize: both; width: 100%; max-width: 100%; min-width: 240px; min-height: 160px; box-sizing: border-box; }
+    :root{
+      --wm-blue:#0071dc;
+      --wm-blue-dark:#004f9a;
+      --wm-yellow:#ffc220;
+      --wm-green:#2ea44f;
+      --text:#111;
+      --muted:#555;
+      --bg:#f7f7f7;
+      --card:#fff;
+      --border:#e5e7eb;
+      --danger:#b91c1c;
+      --ink:#0b1020;
+      --ink-fg:#d1e7ff;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); }
+    a { color: inherit; text-decoration: none; }
+    header { background: var(--wm-blue); color: #fff; }
+    .topbar { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .2px; }
+    .spark { width: 20px; height: 20px; border-radius: 50%; background: var(--wm-yellow); box-shadow:
+      0 -10px 0 0 var(--wm-yellow),
+      0 10px 0 0 var(--wm-yellow),
+      10px 0 0 0 var(--wm-yellow),
+      -10px 0 0 0 var(--wm-yellow); display: inline-block; position: relative; }
+    .nav { display: flex; align-items: center; gap: 10px; }
+    .pill { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,.12); color:#fff; padding: 8px 12px; border-radius: 999px; font-weight: 600; border:1px solid rgba(255,255,255,.2); }
+    .btn { display:inline-flex; align-items:center; gap:8px; padding: 10px 14px; border-radius: 6px; font-weight: 700; }
+    .btn-primary { background:#fff; color: var(--wm-blue); }
+    .btn-primary:hover { background:#f2f7ff; }
+    .btn-outline { border:1px solid #fff; color:#fff; }
+    .btn-outline:hover { background: rgba(255,255,255,.12); }
+    .content { max-width: 1200px; margin: 24px auto 40px; padding: 0 20px; }
+    .titlebar { display:flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .titlebar h2 { margin: 0; }
+    .grid { display:grid; grid-template-columns: 320px minmax(0,1fr); gap: 16px; align-items: start; }
+    .card { background: var(--card); border:1px solid var(--border); border-radius: 10px; padding: 16px; }
+    .muted { color: var(--muted); }
+    .badge { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; font-weight:700; }
+    .badge-ok { background:#e9f8ef; color:#1a4126; border:1px solid #b6e3c2; }
+    .badge-warn { background: #fff5f5; color:#7a1c1c; border:1px solid #fecaca; }
+    .kvs { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; margin-top: 8px; }
+    .kvs dt { color: var(--muted); }
+    .section-title { margin: 0 0 8px; font-size: 16px; }
+    .actions { margin-top: 12px; display:flex; gap:10px; flex-wrap: wrap; }
+    pre { background: var(--ink); color: var(--ink-fg); padding: 16px; border-radius: 8px; overflow: auto; height: 50vh; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+    .small { font-size: 12px; color: var(--muted); }
+    @media (max-width: 960px){ .grid{ grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <header>
-    <h1>Walmart Retail — Signed in with ID.me</h1>
+    <div class="topbar">
+      <div class="brand">
+        <a href="{{ url_for('index') }}" class="brand">
+          <span style="font-size:20px;">Walmart</span>
+          <span class="spark" aria-hidden="true"></span>
+        </a>
+      </div>
+      <div class="nav">
+        {% if profile and profile.first_name %}
+          <span class="pill">Hi, {{ profile.first_name }}{% if profile.is_teacher %} • Teacher{% endif %}</span>
+          <a class="btn btn-outline" href="{{ url_for('index') }}">Storefront</a>
+          <a class="btn btn-primary" href="{{ url_for('logout') }}">Sign out</a>
+        {% else %}
+          <a class="btn btn-primary" href="{{ url_for('login') }}">Verify with ID.me</a>
+        {% endif %}
+      </div>
+    </div>
   </header>
-  <main>
-    <h2>User Profile</h2>
+
+  <main class="content">
+    <div class="titlebar">
+      <h2>Your Profile</h2>
+      {% if profile and profile.is_teacher %}
+        <span class="badge badge-ok">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M13.485 1.929a1.5 1.5 0 0 1 0 2.121L6.596 10.94a1.5 1.5 0 0 1-2.122 0L2.515 8.98a1.5 1.5 0 1 1 2.122-2.121l1.01 1.01 6.848-6.848a1.5 1.5 0 0 1 2.122 0z"/></svg>
+          Educator discount active (10% off)
+        </span>
+      {% endif %}
+    </div>
+
     <div class="grid">
-      <div class="card">
-        <h3>Basic Details</h3>
-        <p><strong>First name:</strong> {{ (profile.first_name if profile and profile.first_name) or 'N/A' }}</p>
-        <p><strong>Last name:</strong> {{ (profile.last_name if profile and profile.last_name) or 'N/A' }}</p>
-        <p><strong>Email:</strong> {{ (profile.email if profile and profile.email) or 'N/A' }}</p>
+      <aside class="card">
+        <h3 class="section-title">Basic Details</h3>
+        <dl class="kvs">
+          <dt>First name</dt><dd>{{ (profile.first_name if profile and profile.first_name) or 'N/A' }}</dd>
+          <dt>Last name</dt><dd>{{ (profile.last_name if profile and profile.last_name) or 'N/A' }}</dd>
+          <dt>Email</dt><dd>{{ (profile.email if profile and profile.email) or 'N/A' }}</dd>
+        </dl>
+
         <div class="actions">
-          <a class="btn" href="/">Home</a>
-          <a class="btn" href="/logout">Logout</a>
+          <a class="btn btn-outline" style="border-color:#d1d5db;color:#111" href="{{ url_for('index') }}">Back to Store</a>
+          {% if not (profile and profile.is_teacher) %}
+            <a class="btn" style="background:var(--wm-blue); color:#fff;" href="{{ url_for('login') }}">Verify with ID.me</a>
+          {% endif %}
         </div>
-        <p class="muted">Displayed fields are extracted from the payload if present.</p>
-      </div>
-      <div class="card payload">
-        <h3>Payload (Tokens + UserInfo)</h3>
+
+        <hr style="border:none; border-top:1px solid var(--border); margin: 14px 0;" />
+
+        <h3 class="section-title">Eligibility</h3>
+        {% if profile and profile.is_teacher %}
+          <p><strong>Teacher verified.</strong> You’ll see an extra 10% off eligible items on the store page.</p>
+          <p class="small">Applied automatically when you’re signed in.</p>
+        {% else %}
+          <p class="muted">Not verified as a teacher.</p>
+          <p class="small">Verify with ID.me to unlock an additional 10% educator discount.</p>
+        {% endif %}
+      </aside>
+
+      <section class="card">
+        <h3 class="section-title">Payload (Tokens + UserInfo)</h3>
         <pre>{{ payload_str }}</pre>
-      </div>
+        <p class="small">This data is shown for demo purposes only.</p>
+      </section>
     </div>
   </main>
 </body>

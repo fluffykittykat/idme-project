@@ -2,48 +2,185 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Walmart | Verify with ID.me</title>
+  <title>Walmart | Big Screen TVs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background: #f7f7f7; color: #111; }
-    header { background: #0071dc; color: #fff; padding: 16px 24px; }
-    header h1 { margin: 0; font-size: 20px; }
-    main { max-width: 720px; margin: 32px auto; background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-    h2 { margin-top: 0; }
-    .cta { margin-top: 24px; }
-    .btn {
-      display: inline-block;
-      padding: 12px 18px;
-      background: #2c7a7b;
-      color: #fff;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: 600;
+    :root{
+      --wm-blue:#0071dc;
+      --wm-blue-dark:#004f9a;
+      --wm-yellow:#ffc220;
+      --wm-green:#2ea44f;
+      --text:#111;
+      --muted:#555;
+      --bg:#f7f7f7;
+      --card:#fff;
+      --border:#e5e7eb;
+      --ink:#0b1020;
+      --ink-fg:#d1e7ff;
     }
-    .btn:hover { background: #276a6b; }
-    .note { margin-top: 16px; color: #555; font-size: 14px; }
-    footer { text-align: center; color: #666; font-size: 12px; padding: 24px; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background: var(--bg); color: var(--text); }
+    a { color: inherit; text-decoration: none; }
+    header { background: var(--wm-blue); color: #fff; }
+    .topbar { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .2px; }
+    .spark { width: 20px; height: 20px; border-radius: 50%; background: var(--wm-yellow); box-shadow:
+      0 -10px 0 0 var(--wm-yellow),
+      0 10px 0 0 var(--wm-yellow),
+      10px 0 0 0 var(--wm-yellow),
+      -10px 0 0 0 var(--wm-yellow); display: inline-block; position: relative; }
+    .nav { display: flex; align-items: center; gap: 10px; }
+    .pill { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,.12); color:#fff; padding: 8px 12px; border-radius: 999px; font-weight: 600; border:1px solid rgba(255,255,255,.2); }
+    .btn { display:inline-flex; align-items:center; gap:8px; padding: 10px 14px; border-radius: 6px; font-weight: 700; }
+    .btn-primary { background:#fff; color: var(--wm-blue); }
+    .btn-primary:hover { background:#f2f7ff; }
+    .btn-outline { border:1px solid #fff; color:#fff; }
+    .btn-outline:hover { background: rgba(255,255,255,.12); }
+    .btn-blue { background: var(--wm-blue); color:#fff; }
+    .btn-blue:hover { background: var(--wm-blue-dark); }
+
+    .hero { background: linear-gradient(120deg, var(--wm-blue) 0%, var(--wm-blue-dark) 60%, #023a6b 100%); color:#fff; }
+    .hero-inner { max-width: 1200px; margin: 0 auto; padding: 28px 20px; display: grid; grid-template-columns: 1.2fr .8fr; gap: 20px; align-items: center; }
+    .hero h1 { margin: 0 0 8px; font-size: clamp(22px, 3.2vw, 34px); }
+    .hero p { margin: 0; color: #e9f3ff; }
+    .badge { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; font-weight:700; }
+    .badge-ok { background: #e9f8ef; color:#1a4126; border:1px solid #b6e3c2; }
+    .badge-generic { background: var(--wm-yellow); color:#2b2b2b; }
+
+    .actions-row { margin-top: 12px; display:flex; gap:10px; flex-wrap: wrap; }
+    .cta-inline { display:flex; gap:10px; align-items:center; flex-wrap: wrap; margin: 8px 0; }
+    .lead { font-weight: 800; color:#2b2b2b; }
+
+    .content { max-width: 1200px; margin: 20px auto 40px; padding: 0 20px; }
+    .grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+    .card { background: var(--card); border:1px solid var(--border); border-radius: 10px; overflow: hidden; display:flex; flex-direction: column; transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease; }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,.08); border-color:#cfd4dc; }
+    .media { aspect-ratio: 16 / 9; background: radial-gradient(1200px 60% at 50% 100%, #1a2540 0%, #0b1020 65%, #05070e 100%); position: relative; }
+    .media .photo { position:absolute; inset:8px; border-radius:8px; width: calc(100% - 16px); height: calc(100% - 16px); object-fit: cover; border: 2px solid #1f2b4a; background: #000; }
+    .media .size { position:absolute; right:10px; bottom:10px; background: rgba(0,0,0,.55); color:#cfe6ff; padding: 4px 8px; border-radius: 999px; font-weight:700; font-size:12px; }
+    .media .rollback { position:absolute; left:10px; top:10px; background: var(--wm-yellow); color:#1a1a1a; padding: 6px 10px; border-radius: 999px; font-weight: 800; font-size: 12px; }
+    .body { padding: 14px; display:flex; flex-direction:column; gap: 8px; }
+    .brandline { font-size: 12px; color: var(--muted); text-transform: uppercase; font-weight:700; letter-spacing:.4px; }
+    .title { font-size: 16px; font-weight: 700; line-height: 1.2; }
+    .price-row { display:flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+    .price { font-size: 22px; font-weight: 800; color:#111; }
+    .strike { text-decoration: line-through; color:#888; font-weight:600; }
+    .teacher { color: var(--wm-green); font-weight: 900; }
+    .teacher-tag { display:inline-flex; align-items:center; gap:6px; color: var(--wm-green); background:#e9f8ef; border:1px solid #c6efcf; padding:4px 8px; border-radius:999px; font-weight:700; font-size:12px; }
+    .cta-row { margin-top: 6px; display:flex; align-items:center; gap:10px; flex-wrap: wrap; }
+    .small { color: var(--muted); font-size: 12px; }
+    footer { text-align:center; color:#666; font-size:12px; padding: 24px; }
+    @media (max-width: 960px){ .hero-inner{ grid-template-columns: 1fr; } .grid{ grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <header>
-    <h1>Walmart Retail — Sign in with ID.me</h1>
-  </header>
-  <main>
-    <h2>Verify with ID.me</h2>
-    <p>
-      Click the button below to securely authenticate with ID.me. After login, you will be redirected back here and your
-      profile information (first name, last name, email) and the full payload will be displayed.
-    </p>
-    <div class="cta">
-      <a class="btn" href="/login">Verify with ID.me</a>
+    <div class="topbar">
+      <div class="brand">
+        <span style="font-size:20px;">Walmart</span>
+        <span class="spark" aria-hidden="true"></span>
+      </div>
+      <div class="nav">
+        {% if profile and profile.first_name %}
+          <span class="pill">Hi, {{ profile.first_name }}{% if profile.is_teacher %} • Teacher{% endif %}</span>
+          <a class="btn btn-outline" href="{{ url_for('profile') }}">Profile</a>
+          <a class="btn btn-primary" href="{{ url_for('logout') }}">Sign out</a>
+        {% else %}
+          <span class="pill">Are you a teacher? Get an additional 10% off</span>
+          <a class="btn btn-primary" href="{{ url_for('login') }}">Verify with ID.me</a>
+        {% endif %}
+      </div>
     </div>
-    <p class="note">
-      Demo scope: login • Flow: OAuth 2.0 Authorization Code + OIDC UserInfo
-    </p>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        {% if not logged_in %}
+          <h1>Big Screen TV Savings</h1>
+          <p>Sign in to view personalized deals and pricing.</p>
+          <div class="actions-row">
+            <a class="btn btn-outline" href="#tvs">Browse TVs</a>
+          </div>
+        {% elif is_teacher and not show_generic_welcome %}
+          <span class="badge badge-ok">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M13.485 1.929a1.5 1.5 0 0 1 0 2.121L6.596 10.94a1.5 1.5 0 0 1-2.122 0L2.515 8.98a1.5 1.5 0 1 1 2.122-2.121l1.01 1.01 6.848-6.848a1.5 1.5 0 0 1 2.122 0z"/></svg>
+            Educator discount active
+          </span>
+          <h1>Welcome back{% if profile and profile.first_name %}, {{ profile.first_name }}{% endif %}!</h1>
+<p>Thanks for all you do. Enjoy an additional {{ (discount_rate * 100) | round(0) | int }}% off eligible big-screen TVs today.</p>
+          <div class="actions-row">
+            <a class="btn btn-primary" href="#tvs">Shop TVs</a>
+            <a class="btn btn-outline" href="{{ url_for('index', welcome=1) }}">Show generic welcome</a>
+          </div>
+        {% elif is_teacher and show_generic_welcome %}
+          <span class="badge badge-ok">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M13.485 1.929a1.5 1.5 0 0 1 0 2.121L6.596 10.94a1.5 1.5 0 0 1-2.122 0L2.515 8.98a1.5 1.5 0 1 1 2.122-2.121l1.01 1.01 6.848-6.848a1.5 1.5 0 0 1 2.122 0z"/></svg>
+            Educator discount active
+          </span>
+          <h1>Big Screen TV Savings</h1>
+          <p>Explore our top picks in 65"&ndash;95" 4K TVs. Your educator discount applies automatically.</p>
+          <div class="actions-row">
+            <a class="btn btn-primary" href="{{ url_for('index') }}">Show personal welcome</a>
+            <a class="btn btn-outline" href="#tvs">Browse TVs</a>
+          </div>
+        {% else %}
+          <h1>Big Screen TV Savings</h1>
+          <p>Welcome back. Browse our top picks in 65"&ndash;95" 4K TVs.</p>
+          <div class="actions-row">
+            <a class="btn btn-outline" href="#tvs">Browse TVs</a>
+          </div>
+        {% endif %}
+      </div>
+      <div style="justify-self:end; align-self:center;">
+        <div class="pill" style="background:#0f3a69; border:1px solid rgba(255,255,255,.25);">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="opacity:.9"><path d="M8 0l2.39 4.84L16 5.64l-4 3.9.95 5.46L8 12.9 3.05 15l.95-5.46-4-3.9 5.61-.8z"/></svg>
+          Walmart Deals
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="content" id="tvs">
+    <div class="grid">
+      {% for p in products %}
+      {% set discounted = (p.price * (1 - discount_rate)) %}
+      <a class="card" href="{{ url_for('product_detail', sku=p.sku) }}" aria-label="{{ p.brand }} {{ p.name }}">
+        <div class="media">
+          <img class="photo" src="{{ url_for('static', filename=p.image) }}" alt="{{ p.brand }} {{ p.name }}" />
+          <div class="rollback">Rollback</div>
+          <div class="size">{{ p.size }}"</div>
+        </div>
+        <div class="body">
+          <div class="brandline">{{ p.brand }}</div>
+          <div class="title">{{ p.name }}</div>
+
+          <div class="price-row">
+            <div class="price">{{ p.price | currency }}</div>
+            {% if p.was and p.was > p.price %}
+              <div class="strike">{{ p.was | currency }}</div>
+            {% endif %}
+          </div>
+
+          {% if logged_in and is_teacher %}
+            <div class="price-row">
+              <span class="teacher-tag">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M13.485 1.929a1.5 1.5 0 0 1 0 2.121L6.596 10.94a1.5 1.5 0 0 1-2.122 0L2.515 8.98a1.5 1.5 0 1 1 2.122-2.121l1.01 1.01 6.848-6.848a1.5 1.5 0 0 1 2.122 0z"/></svg>
+                Teacher price
+              </span>
+              <span class="teacher">{{ discounted | currency }}</span>
+<span class="small">Save an additional {{ (discount_rate * 100) | round(0) | int }}%</span>
+            </div>
+          {% endif %}
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    <p class="small" style="margin-top:14px;">Prices shown are for demonstration. Educator discount applies after successful ID.me verification.</p>
   </main>
+
   <footer>
-    Demo for Option 1 (OIDC/OAuth) • Retail Vertical (Customer: Walmart)
+    Demo for Retail vertical (Walmart-style) • OIDC via ID.me • Authorization Code Flow
   </footer>
 </body>
 </html>
