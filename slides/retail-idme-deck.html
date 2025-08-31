@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Retail (Walmart-style) + ID.me | Trusted Access & Discounts</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Reveal.js (CDN) -->
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5/dist/reveal.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@5/dist/theme/white.css" id="theme">
+  <style>
+    :root{
+      --wm-blue:#0071dc;
+      --wm-blue-dark:#004f9a;
+      --wm-yellow:#ffc220;
+      --wm-green:#2ea44f;
+      --ink:#0b1020;
+      --ink-fg:#d1e7ff;
+      --muted:#666;
+    }
+    .reveal .title-accent { color: var(--wm-blue-dark); }
+    .reveal .tag { display:inline-block; padding:4px 8px; border-radius:999px; font-weight:700; font-size: .6em; border: 1px solid #ddd; background:#f7f7f7; }
+    .note { color: var(--muted); font-size: .6em; }
+    .pill { display:inline-block; padding:6px 10px; border-radius:999px; font-weight:800; background:#e9f8ef; color:#1a4126; border:1px solid #b6e3c2; }
+    pre code { font-size: .58em !important; line-height: 1.35; }
+    .grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+    .grid-3 { display:grid; grid-template-columns: repeat(3,1fr); gap: 18px; align-items: start; }
+    .callout { border-left: 4px solid var(--wm-blue); padding-left: 12px; }
+    .ink { background: var(--ink); color: var(--ink-fg); padding: 12px; border-radius: 8px; }
+    .small { font-size: .7em; }
+    .center { text-align:center; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+    .svg-wrap { display:flex; justify-content:center; }
+    .svg-wrap svg { max-width: 90%; height: auto; }
+
+    /* Typography scale adjustments for smaller deck footprint */
+    .reveal { font-size: 20px; }
+    .reveal h1 { font-size: 1.6em; }
+    .reveal h2 { font-size: 1.25em; }
+    .reveal h3 { font-size: 1.1em; }
+    .reveal p, .reveal li { font-size: 0.85em; line-height: 1.2; }
+
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <section>
+        <h2 class="title-accent">ID.me + Retail</h2>
+        <h3>Trusted Access and Educator Discounts for Walmart-style Storefronts</h3>
+        <p>
+          <span class="tag">Vertical: Retail (E‑commerce)</span>
+          <span class="tag">Customer: Walmart</span>
+          <span class="tag">Protocol: OpenID Connect (Auth Code)</span>
+        </p>
+        <p class="note">Scenario: Internal stakeholders want to understand how ID.me enables trusted user authentication and portability; 30‑minute deep dive.</p>
+      </section>
+
+      <section>
+        <h3>How the Solution Works</h3>
+        <div class="grid-2">
+          <div class="callout">
+            <h4>Trusted Identity + Eligibility</h4>
+            <ul>
+              <li>Users authenticate with ID.me’s network (SSO).</li>
+              <li>Eligibility (e.g., Teacher) verified once, then portable.</li>
+              <li>Customer receives signed tokens/claims to grant benefits.</li>
+            </ul>
+            <p class="small">Trust: verified attributes reduce abuse and account sharing; consistent claims across sessions/apps.</p>
+          </div>
+          <div>
+            <h4>Value to Retail</h4>
+            <ul>
+              <li>Grow conversion with targeted, low‑friction offers (Educator, Military, Student).</li>
+              <li>Reduce fraud/abuse on segmented pricing and perks.</li>
+              <li>Portability: users reuse verification—fewer re‑verifications.</li>
+            </ul>
+            <p class="pill">Outcome: Higher CVR, AOV, and margin protection.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h3>Integration at Walmart (High Level)</h3>
+        <div class="grid-2">
+          <div>
+            <h4>Touchpoints</h4>
+            <ul>
+              <li>“Verify with ID.me” button on storefront.</li>
+              <li>Redirect to ID.me for login and consent.</li>
+              <li>Return with authorization code → token exchange.</li>
+              <li>Claims mapped to local roles/flags (e.g., is_teacher).</li>
+              <li>Pricing logic applies educator discount in session.</li>
+            </ul>
+          </div>
+          <div class="svg-wrap">
+            <!-- Simple sequence diagram -->
+            <svg viewBox="0 0 900 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="OIDC flow diagram">
+              <style>
+                .b{fill:#fff;stroke:#ccd;stroke-width:1.5}
+                .t{font:14px system-ui,Segoe UI,Roboto,Arial,sans-serif}
+                .s{stroke:#89a;stroke-width:1.5;marker-end:url(#a)}
+              </style>
+              <defs>
+                <marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto-start-reverse">
+                  <polygon points="0 0, 8 4, 0 8" fill="#89a"/>
+                </marker>
+              </defs>
+              <rect x="30" y="30" width="200" height="50" rx="8" class="b"/>
+              <text x="130" y="60" text-anchor="middle" class="t">Browser</text>
+              <rect x="350" y="30" width="200" height="50" rx="8" class="b"/>
+              <text x="450" y="60" text-anchor="middle" class="t">Retail App</text>
+              <rect x="670" y="30" width="200" height="50" rx="8" class="b"/>
+              <text x="770" y="60" text-anchor="middle" class="t">ID.me OIDC</text>
+
+              <line x1="130" y1="110" x2="450" y2="110" class="s"/>
+              <text x="290" y="105" text-anchor="middle" class="t">GET /login</text>
+
+              <line x1="450" y1="140" x2="770" y2="140" class="s"/>
+              <text x="610" y="135" text-anchor="middle" class="t">Auth request (state, nonce)</text>
+
+              <line x1="770" y1="170" x2="450" y2="170" class="s"/>
+              <text x="610" y="165" text-anchor="middle" class="t">Callback (code)</text>
+
+              <line x1="450" y1="200" x2="770" y2="200" class="s"/>
+              <text x="610" y="195" text-anchor="middle" class="t">Token exchange</text>
+
+              <line x1="450" y1="230" x2="770" y2="230" class="s"/>
+              <text x="610" y="225" text-anchor="middle" class="t">UserInfo (claims)</text>
+
+              <line x1="450" y1="260" x2="130" y2="260" class="s"/>
+              <text x="290" y="255" text-anchor="middle" class="t">Session set → pricing</text>
+            </svg>
+          </div>
+        </div>
+        <p class="note">Minimal changes: add login/callback routes, map claims to discount flag, adjust pricing templates.</p>
+      </section>
+
+      <section>
+        <h3>OpenID Connect Walkthrough</h3>
+        <div class="grid-2">
+          <div>
+            <ol>
+              <li>Discover endpoints from <span class="mono">/.well-known/openid-configuration</span>.</li>
+              <li>Build auth request with <span class="mono">state</span> and <span class="mono">nonce</span>.</li>
+              <li>Exchange code for tokens (access, id_token).</li>
+              <li>Fetch <span class="mono">/userinfo</span>; normalize claims.</li>
+              <li>Derive <span class="mono">is_teacher</span> from claims → apply discount.</li>
+            </ol>
+            <p class="small">Scopes: <span class="mono">login</span> (per assignment). Optional: <span class="mono">prompt</span>, <span class="mono">max_age</span>, <span class="mono">acr_values</span>.</p>
+          </div>
+          <div>
+            <pre><code>// Flask (app.py)
+cfg = get_provider_config()
+authorization_endpoint = cfg["authorization_endpoint"]
+
+state, nonce = secrets.token_urlsafe(16), secrets.token_urlsafe(16)
+session["oauth_state"] = state
+session["oauth_nonce"] = nonce
+
+params = {
+  "client_id": IDME_CLIENT_ID,
+  "redirect_uri": effective_redirect_uri(),
+  "response_type": "code",
+  "scope": IDME_SCOPE,    # "login"
+  "state": state,
+  "nonce": nonce,
+}
+return redirect(f"{authorization_endpoint}?{urlencode(params)}")</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h3>Token Exchange + Claims Mapping</h3>
+        <div class="grid-2">
+          <div>
+            <pre><code># Exchange code for tokens
+token_resp = requests.post(token_endpoint, data={
+  "grant_type": "authorization_code",
+  "code": code,
+  "redirect_uri": effective_redirect_uri(),
+  "client_id": IDME_CLIENT_ID,
+  "client_secret": IDME_CLIENT_SECRET,
+})
+tokens = token_resp.json()
+access_token = tokens.get("access_token")
+id_token = tokens.get("id_token")
+
+# Fetch userinfo
+ui = requests.get(userinfo_endpoint,
+  headers={"Authorization": f"Bearer {access_token}"})
+claims = ui.json() if ui.status_code == 200 else {}</code></pre>
+          </div>
+          <div>
+            <pre><code># Determine eligibility (teacher)
+def is_teacher_from_claims(claims):
+  # checks multiple keys: affiliations, groups, etc.
+  ...
+
+is_teacher = is_teacher_from_claims(claims) or \
+             is_teacher_from_claims(decode_jwt_unverified(id_token))
+
+session["idme_profile"] = {
+  "first_name": claims.get("given_name") or ...,
+  "last_name":  claims.get("family_name") or ...,
+  "email":      claims.get("email"),
+  "is_teacher": is_teacher,
+}</code></pre>
+            <p class="note">Demo forces educator discount for story clarity; production would rely solely on verified claims.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h3>User Experience Walkthrough</h3>
+        <ul>
+          <li>Storefront shows “Verify with ID.me” to eligible shoppers.</li>
+          <li>Redirect to ID.me → login/consent; return to store in seconds.</li>
+          <li>Educator badge appears; prices reflect extra 10% off automatically.</li>
+          <li>Product page shows discount and savings line items.</li>
+          <li>Profile view exposes payload (tokens/userinfo) for demo purposes.</li>
+        </ul>
+        <p class="note">All pricing/discount logic happens server-side using the session flag derived from ID.me claims.</p>
+      </section>
+
+      <section>
+        <h3>Trust, Re‑verification, and Support</h3>
+        <div class="grid-3">
+          <div class="callout">
+            <h4>Trust</h4>
+            <ul>
+              <li>Verified attributes from ID.me’s network reduce abuse.</li>
+              <li>Signed tokens, <span class="mono">state</span>/<span class="mono">nonce</span>, TLS → protocol security.</li>
+              <li>Portability: once verified, users can reuse across merchants.</li>
+            </ul>
+          </div>
+          <div class="callout">
+            <h4>Do users verify every visit?</h4>
+            <ul>
+              <li>No—verification persists at ID.me; sessions/refresh reduce friction.</li>
+              <li>Optional <span class="mono">max_age</span> or policy can prompt re‑auth as needed.</li>
+            </ul>
+          </div>
+          <div class="callout">
+            <h4>Support</h4>
+            <ul>
+              <li>Tier 1 identity proofing handled by ID.me.</li>
+              <li>Merchant support focuses on commerce/account issues.</li>
+              <li>Clear escalation paths for verification help.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h3>Access Model and Entitlements</h3>
+        <ul>
+          <li>Grant access/benefits based on claims (e.g., <span class="mono">is_teacher</span>).</li>
+          <li>Map claims to roles or feature flags; avoid storing unnecessary PII.</li>
+          <li>Use short‑lived sessions + refresh; rotate keys per OIDC best practices.</li>
+          <li>Optional: Persist eligibility snapshot for audit with expiry/time‑bound.</li>
+        </ul>
+        <p class="note">In this demo, pricing templates react to <span class="mono">is_teacher</span> in the Flask session.</p>
+      </section>
+
+      <section>
+        <h3>How This Fits Walmart’s Current System</h3>
+        <div class="grid-2">
+          <div>
+            <h4>Minimal Integration</h4>
+            <ul>
+              <li>Add OIDC client config (client_id/secret, redirect URI).</li>
+              <li>Implement <span class="mono">/login</span> and <span class="mono">/callback</span> routes.</li>
+              <li>Apply pricing rules when <span class="mono">is_teacher</span> true.</li>
+              <li>Use profile endpoint for customer care debug (non‑prod).</li>
+            </ul>
+          </div>
+          <div>
+            <h4>Security/Compliance</h4>
+            <ul>
+              <li>Honor reverse proxy headers (ProxyFix), HTTPS, secure cookies.</li>
+              <li>Validate <span class="mono">state</span>, use <span class="mono">nonce</span>; verify tokens in prod.</li>
+              <li>Follow least‑privilege data handling; avoid storing secrets.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h3>Demo Plan (Runbook)</h3>
+        <ol>
+          <li>Home → Click “Verify with ID.me”.</li>
+          <li>Redirect to ID.me → complete login/consent.</li>
+          <li>Back to store → educator badge + discounted pricing.</li>
+          <li>Open a product → show savings and teacher price.</li>
+          <li>Profile → show claims (for demo) and explain mapping.</li>
+        </ol>
+        <p class="small">Code: <span class="mono">/login</span> builds auth URL; <span class="mono">/callback</span> exchanges code, fetches userinfo, sets session.</p>
+      </section>
+
+      <section>
+        <h3>Appendix: Anticipated Q&A</h3>
+        <ul>
+          <li>How is trust established? → Verified attributes, token security, OIDC best practices.</li>
+          <li>Do users re‑verify? → Not typically; policy controls and <span class="mono">max_age</span> available.</li>
+          <li>Who handles Tier 1? → ID.me for identity proofing; retailer handles commerce issues.</li>
+          <li>How is access granted? → Claims → roles/flags; apply pricing/features accordingly.</li>
+          <li>What about portability? → Users reuse verification across ID.me network merchants.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Summary</h2>
+        <ul>
+          <li>ID.me provides trusted, portable identity and eligibility.</li>
+          <li>Walmart enables segmented offers with minimal code changes.</li>
+          <li>OIDC Auth Code flow integrates cleanly and securely.</li>
+        </ul>
+        <p class="pill">Next: live demo → storefront, verification, pricing, profile.</p>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@5/dist/reveal.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      slideNumber: 'c/t',
+      transition: 'fade',
+      controls: true,
+      progress: true,
+      center: true
+    });
+  </script>
+</body>
+</html>
