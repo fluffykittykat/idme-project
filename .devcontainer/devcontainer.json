@@ -3,14 +3,28 @@
   "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bullseye",
 
   "runArgs": ["-p", "5000:5000"],
+  "forwardPorts": [5000],
+  "portsAttributes": {
+    "5000": { "label": "App server", "onAutoForward": "openBrowser" }
+  },
 
-  "postCreateCommand": "pip3 install --user -r requirements.txt && pip install --upgrade pip",
+  "postCreateCommand": "bash -lc 'set -e; python -m pip install --upgrade pip; if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; else echo \"No requirements.txt; skipping.\"; fi'",
+
+  "postStartCommand": "bash -lc 'pgrep -f \"python app.py\" >/dev/null || (nohup python app.py >/tmp/app.log 2>&1 & disown)'",
 
   "mounts": [
     "source=C:/Users/DJ/workspace/idme,target=/workspace,type=bind,consistency=cached"
   ],
-  "workspaceFolder": "/workspace"
+  "workspaceFolder": "/workspace",
 
-  // "customizations": {},
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "saoudrizwan.claude-dev"
+      ]
+    }
+  }
+
   // "remoteUser": "root"
 }
+
