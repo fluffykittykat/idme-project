@@ -11,6 +11,9 @@
 
   "postStartCommand": "bash -lc 'pgrep -f \"python app.py\" >/dev/null || (nohup python app.py >/tmp/app.log 2>&1 & disown)'",
 
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+  ],
   "workspaceFolder": "/workspace",
 
   "customizations": {
