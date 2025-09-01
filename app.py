@@ -442,6 +442,10 @@ def logout():
     session.clear()
     return redirect(url_for("index"))
 
+@app.get("/healthz")
+def healthz():
+    return "ok", 200
+
 if __name__ == "__main__":
     # Run Flask app
     # Ensure the redirect URI matches http://localhost:5000/callback (default) or set IDME_REDIRECT_URI to your callback

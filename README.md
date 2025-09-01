@@ -256,3 +256,11 @@ Notes:
 - The image runs Gunicorn binding 0.0.0.0:5000 and honors TRUST_PROXY/FORCE_HTTPS so generated URLs and cookies are correct behind TLS.
 - Ensure https://idme.izzytchai.com/callback is allowlisted in your ID.me app.
 - If you don’t run behind a reverse proxy, you can still expose port 5000 publicly, but use proper TLS termination in front of it for production.
+
+## AWS Integration
+- aws sso login --profile bond-admin --no-browser
+- aws sts get-caller-identity
+- ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+- aws ecr get-login-password --region "$AWS_REGION" \
+| docker login --username AWS --password-stdin "${ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+- docker compose push
