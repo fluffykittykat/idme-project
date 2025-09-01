@@ -258,9 +258,24 @@ Notes:
 - If you don’t run behind a reverse proxy, you can still expose port 5000 publicly, but use proper TLS termination in front of it for production.
 
 ## AWS Integration
-- aws sso login --profile bond-admin --no-browser
-- aws sts get-caller-identity
-- ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-- aws ecr get-login-password --region "$AWS_REGION" \
-| docker login --username AWS --password-stdin "${ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-- docker compose push
+
+# 1) Get login and account info and confirm it.
+aws sso login --profile bond-admin --no-browser
+
+aws sts get-caller-identity
+
+# 2) Ensure region is set (adjust if needed)
+export AWS_REGION=us-west-2
+export ACCOUNT="$(aws sts get-caller-identity --query Account --output text)"
+export REGISTRY="${ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+echo "ACCOUNT=$ACCOUNT | AWS_REGION=$AWS_REGION | REGISTRY=$REGISTRY"
+
+# 3) Authenticate Docker to ECR (note the pipe between the two commands)
+aws ecr get-login-password --region "$AWS_REGION" \
+| docker login --username AWS --password-stdin "$REGISTRY"
+
+# 4) Build new image and push to ECR
+docker compose build --no-cache
+
+# 5) Push container to ECR
+docker compose push
