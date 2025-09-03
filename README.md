@@ -257,7 +257,26 @@ Notes:
 - Ensure https://idme.izzytchai.com/callback is allowlisted in your ID.me app.
 - If you don’t run behind a reverse proxy, you can still expose port 5000 publicly, but use proper TLS termination in front of it for production.
 
-## AWS Integration
+## Logging into AWS
+
+# 1) In your home directory, create file ~/.aws/config. You will need at least two sections. The first section is the general login section. The second is a profile you will then use to fill out the other info per service you are trying to update or push too.
+
+[sso-session my-aws]
+sso_start_url = [LOGIN URL]
+sso_region = [REGION where you've setup SSO]
+sso_registration_scopes = sso:account:access
+
+[profile bond-admin]
+sso_session = my-aws
+sso_account_id = [ACCT ID]
+sso_role_name = [ROLE for that Account]
+region = [REGION]
+AWS_PROFILE = bond-admin
+output = json
+
+# 2) Then run the next two steps in the blow section.
+
+## Pushing a container to ECR
 
 # 1) Get login and account info and confirm it.
 aws sso login --profile bond-admin --no-browser
@@ -279,3 +298,13 @@ docker compose build --no-cache
 
 # 5) Push container to ECR
 docker compose push
+
+## Overview on Creating a ECS container on Fargate
+
+# 1) Create and push the docker container using the above 5 steps.
+
+# 2) Once the container is in ECR, next create a ECS cluster.
+
+# 3) Define a Task Definition. This is a single task that will be run.
+
+# 4) Create a service inside the cluster that uses the Task Definition. The service is where you will define the the instance size, how it scales and networking options like a load balancer. Note if you use a load balancer, make sure to have at least two publically facing subnets. Also make sure the security rules are properly set as well. Also assuming you use Fargate Spot is cheaper because it uses unused resources.
