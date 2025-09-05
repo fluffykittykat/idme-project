@@ -446,8 +446,20 @@ def logout():
 def healthz():
     return "ok", 200
 
+@app.route("/slides/")
+def slides_default():
+    """Default to the HTML presentation"""
+    from flask import send_from_directory
+    return send_from_directory("slides", "retail-idme-deck.html")
+
+@app.route("/slides/<path:filename>")
+def slides(filename):
+    """Serve slides from the slides directory"""
+    from flask import send_from_directory
+    return send_from_directory("slides", filename)
+
 if __name__ == "__main__":
     # Run Flask app
     # Ensure the redirect URI matches http://localhost:5000/callback (default) or set IDME_REDIRECT_URI to your callback
-    port = int(os.getenv("PORT", "5000"))
+    port = int(os.getenv("PORT", "8080"))
     app.run(host="0.0.0.0", port=port, debug=True)
